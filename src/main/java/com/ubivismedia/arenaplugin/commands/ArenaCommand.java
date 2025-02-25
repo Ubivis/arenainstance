@@ -23,6 +23,7 @@ public class ArenaCommand implements CommandExecutor {
     private final ArenaManager arenaManager;
     private final Map<Player, Location> playerLocations = new HashMap<>();
     private final Map<Player, ItemStack[]> savedInventories = new HashMap<>();
+    private final Map<Player, ItemStack[]> specialBlocks = new HashMap<>();
     
     public ArenaCommand(ArenaManager arenaManager) {
         this.arenaManager = arenaManager;
@@ -86,43 +87,6 @@ public class ArenaCommand implements CommandExecutor {
                 player.sendMessage("Du hast die Arena verlassen!");
                 break;
                 
-            case "start":
-                if (!arenaManager.arenaExists(arenaName)) {
-                    player.sendMessage("Diese Arena existiert nicht!");
-                    return true;
-                }
-                
-                String instanceName = arenaName + "-" + player.getName();
-                World arenaInstance = Bukkit.createWorld(new WorldCreator(instanceName));
-                if (arenaInstance == null) {
-                    player.sendMessage("Fehler beim Erstellen der Arena-Instanz!");
-                    return true;
-                }
-                
-                player.sendMessage("Der Arenakampf startet in 10 Sekunden!");
-                Bukkit.getScheduler().runTaskLater(arenaManager.getPlugin(), () -> {
-                    playerLocations.put(player, player.getLocation());
-                    savedInventories.put(player, player.getInventory().getContents());
-                    player.teleport(arenaInstance.getSpawnLocation());
-                    player.getInventory().clear();
-                    player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
-                    player.sendMessage("Der Arenakampf hat begonnen! Erste Gegner erscheinen in 5 Sekunden!");
-                    
-                    new BukkitRunnable() {
-                        private int wave = 1;
-                        @Override
-                        public void run() {
-                            player.sendMessage("Welle " + wave + " beginnt! Gegner erscheinen.");
-                            for (int i = 0; i < wave; i++) {
-                                arenaInstance.spawnEntity(player.getLocation().add(2, 0, 2), EntityType.ZOMBIE);
-                            }
-                            wave++;
-                        }
-                    }.runTaskTimer(arenaManager.getPlugin(), 100L, 200L);
-                }, 200L);
-                
-                break;
-                
             case "edit":
                 if (!arenaManager.arenaExists(arenaName)) {
                     player.sendMessage("Diese Arena existiert nicht!");
@@ -132,7 +96,18 @@ public class ArenaCommand implements CommandExecutor {
                 savedInventories.put(player, player.getInventory().getContents());
                 player.teleport(arenaManager.getArena(arenaName).getSpawnLocation());
                 player.setGameMode(GameMode.CREATIVE);
-                player.sendMessage("Du bearbeitest nun die Arena " + arenaName + "!");
+                
+                ItemStack[] specialItems = new ItemStack[]{
+                    new ItemStack(Material.GOLD_BLOCK, 1), // Beispiel für Startblock
+                    new ItemStack(Material.EMERALD_BLOCK, 1), // Beispiel für Wellenblock
+                    new ItemStack(Material.CHEST, 1), // Beispiel für Waffenkiste
+                    new ItemStack(Material.DIAMOND_BLOCK, 1) // Beispiel für Zuschauerblock
+                };
+                
+                specialBlocks.put(player, specialItems);
+                player.getInventory().setContents(specialItems);
+                
+                player.sendMessage("Du bearbeitest nun die Arena " + arenaName + "! Spezielle Blöcke wurden deinem Inventar hinzugefügt.");
                 break;
                 
             default:
