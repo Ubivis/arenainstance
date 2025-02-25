@@ -1,1 +1,12 @@
+name: ArenaInstance
+version: 1.0
+main: com.ubivismedia.arenaplugin.ArenaInstance
+author: UbivisMedia
+description: Ein Arena-Kampf-Plugin für Minecraft.
+api-version: 1.21
+commands:
+  arena:
+    description: Verwaltung der Arenen
+    usage: /arena <subcommand>
+    aliases: [battle, fight]
 
