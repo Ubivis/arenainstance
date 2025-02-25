@@ -1,6 +1,7 @@
 package com.ubivismedia.arenaplugin.commands;
 
 import com.ubivismedia.arenaplugin.arena.ArenaManager;
+import com.ubivismedia.arenaplugin.gui.ArenaEditGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,8 +37,8 @@ public class ArenaCommand implements CommandExecutor {
         
         Player player = (Player) sender;
         
-        if (args.length < 2 && !args[0].equalsIgnoreCase("leave")) {
-            player.sendMessage("Benutzung: /arena <create|delete|join|leave|start> <ArenaName>");
+        if (args.length < 2 && !args[0].equalsIgnoreCase("leave") && !args[0].equalsIgnoreCase("edit")) {
+            player.sendMessage("Benutzung: /arena <create|delete|join|leave|start|edit> <ArenaName>");
             return true;
         }
         
@@ -122,8 +123,17 @@ public class ArenaCommand implements CommandExecutor {
                 
                 break;
                 
+            case "edit":
+                if (!arenaManager.arenaExists(arenaName)) {
+                    player.sendMessage("Diese Arena existiert nicht!");
+                    return true;
+                }
+                new ArenaEditGUI(player, arenaManager.getArena(arenaName)).open();
+                player.sendMessage("Arena-Editor für " + arenaName + " wurde geöffnet!");
+                break;
+                
             default:
-                player.sendMessage("Unbekannter Arena-Befehl! Nutze /arena <create|delete|join|leave|start> <ArenaName>");
+                player.sendMessage("Unbekannter Arena-Befehl! Nutze /arena <create|delete|join|leave|start|edit> <ArenaName>");
                 break;
         }
         
