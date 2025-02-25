@@ -1,6 +1,7 @@
 package com.ubivismedia.arenaplugin.gui;
 
 import com.ubivismedia.arenaplugin.arena.Arena;
+import com.ubivismedia.arenaplugin.arena.ArenaSpectatorManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,10 +16,12 @@ public class ArenaEditGUI {
     private final Arena arena;
     private final Block configBlock;
     private final Inventory gui;
+    private final ArenaSpectatorManager spectatorManager;
     
-    public ArenaEditGUI(Arena arena, Block configBlock) {
+    public ArenaEditGUI(Arena arena, Block configBlock, ArenaSpectatorManager spectatorManager) {
         this.arena = arena;
         this.configBlock = configBlock;
+        this.spectatorManager = spectatorManager;
         this.gui = Bukkit.createInventory(null, 9, "Block-Einstellungen");
         setupItems();
     }
@@ -29,6 +32,9 @@ public class ArenaEditGUI {
             gui.setItem(1, createItem(Material.PAPER, "Gegneranzahl: " + arena.getWaveAmount(configBlock)));
             gui.setItem(2, createItem(Material.CLOCK, "Spawn-Intervall: " + arena.getWaveInterval(configBlock) + "s"));
             gui.setItem(3, createItem(Material.BOOK, "Wellen-Nummer: " + arena.getWaveNumber(configBlock)));
+        }
+        if (configBlock.getType() == Material.DIAMOND_BLOCK) {
+            gui.setItem(4, createItem(Material.PLAYER_HEAD, "Zuschauerblock setzen"));
         }
         gui.setItem(8, createItem(Material.BARRIER, "Schließen"));
     }
@@ -64,6 +70,10 @@ public class ArenaEditGUI {
                 break;
             case 3:
                 arena.setWaveNumber(configBlock, arena.getWaveNumber(configBlock) + 1);
+                break;
+            case 4:
+                spectatorManager.addSpectatorBlock(arena.getName(), configBlock.getLocation());
+                player.sendMessage("Zuschauerblock hinzugefügt!");
                 break;
             case 8:
                 player.closeInventory();
