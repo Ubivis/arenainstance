@@ -6,13 +6,16 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
+import java.util.UUID;
 
 public class ArenaWaveManager {
     
     private final Arena arena;
     private int currentWave = 1;
+    private boolean battleActive = true;
     
     public ArenaWaveManager(Arena arena) {
         this.arena = arena;
@@ -22,6 +25,11 @@ public class ArenaWaveManager {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (!battleActive || areAllPlayersDead()) {
+                    endBattle();
+                    cancel();
+                    return;
+                }
                 spawnWave(world);
                 currentWave++;
             }
@@ -43,5 +51,21 @@ public class ArenaWaveManager {
                 }
             }
         }
+    }
+    
+    private boolean areAllPlayersDead() {
+        for (UUID playerId : arena.getPlayersInArena()) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && !player.isDead()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void endBattle() {
+        battleActive = false;
+        Bukkit.broadcastMessage("Die Arena " + arena.getName() + " wurde beendet! Alle Wellen besiegt oder alle Spieler tot.");
+        arena.resetArena();
     }
 }
