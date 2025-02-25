@@ -24,9 +24,15 @@ public class ArenaEnvironmentManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                triggerRandomEffect(world);
+                int currentWave = arena.getCurrentWave();
+                int totalWaves = arena.getTotalWaves();
+                
+                double probability = (currentWave / (double) totalWaves) * 0.5; // Maximal 50% Wahrscheinlichkeit
+                if (random.nextDouble() <= probability) {
+                    triggerRandomEffect(world);
+                }
             }
-        }.runTaskTimer(arena.getPlugin(), 0L, 200L); // Alle 10 Sekunden ein Effekt
+        }.runTaskTimer(arena.getPlugin(), 0L, 200L); // Alle 10 Sekunden prüfen
     }
     
     private void triggerRandomEffect(World world) {
