@@ -2,6 +2,7 @@ package com.ubivismedia.arenaplugin.arena;
 
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 import org.bukkit.block.Block;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,10 +67,12 @@ public class Arena {
     
     private List<String> loadAvailableMobs() {
         List<String> mobs = new ArrayList<>();
-        mobs.add("ZOMBIE");
-        mobs.add("SKELETON");
-        mobs.add("SPIDER");
-        mobs.add("CREEPER");
+        
+        for (EntityType type : EntityType.values()) {
+            if (type.isAlive()) {
+                mobs.add(type.name());
+            }
+        }
         
         if (mythicMobsInstalled) {
             BukkitAPIHelper mythicHelper = new BukkitAPIHelper();
