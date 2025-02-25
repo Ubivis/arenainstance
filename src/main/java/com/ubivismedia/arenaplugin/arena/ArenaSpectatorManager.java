@@ -19,6 +19,7 @@ public class ArenaSpectatorManager implements CommandExecutor {
     private final Map<UUID, String> spectators = new HashMap<>();
     private final Map<UUID, ArmorStand> spectatorAvatars = new HashMap<>();
     private final Random random = new Random();
+    private final Map<String, List<Location>> arenaSpectatorBlocks = new HashMap<>();
     
     public ArenaSpectatorManager() {
         startSpectatorAnimations();
@@ -122,7 +123,21 @@ public class ArenaSpectatorManager implements CommandExecutor {
     }
     
     private Location getRandomSpectatorBlockLocation(String arenaName) {
-        // Diese Methode sollte die Liste der Zuschauerblöcke abrufen und zufällig einen auswählen
-        return null; // Platzhalter für die Implementierung
+        List<Location> spectatorBlocks = arenaSpectatorBlocks.getOrDefault(arenaName, new ArrayList<>());
+        if (spectatorBlocks.isEmpty()) {
+            return null;
+        }
+        return spectatorBlocks.get(random.nextInt(spectatorBlocks.size()));
+    }
+    
+    public void addSpectatorBlock(String arenaName, Location location) {
+        arenaSpectatorBlocks.computeIfAbsent(arenaName, k -> new ArrayList<>()).add(location);
+    }
+    
+    public void removeSpectatorBlock(String arenaName, Location location) {
+        List<Location> blocks = arenaSpectatorBlocks.get(arenaName);
+        if (blocks != null) {
+            blocks.remove(location);
+        }
     }
 }
