@@ -1,5 +1,5 @@
 challenges:
-  challenge1:
+  kill_50_mobs:
     description: "Besiege 50 Gegner in einer Arena"
     type: "kill_mobs"
     amount: 50
@@ -8,7 +8,7 @@ challenges:
       type: "arena_diamonds"
       amount: 10
   
-  challenge2:
+  survive_10_waves:
     description: "Überlebe 10 Wellen ohne Schaden zu nehmen"
     type: "survival"
     amount: 10
@@ -16,7 +16,7 @@ challenges:
       type: "arena_diamonds"
       amount: 20
   
-  challenge3:
+  pvp_kill_3:
     description: "Töte 3 Mitspieler in PvP-Modus"
     type: "kill_players"
     amount: 3
@@ -24,7 +24,7 @@ challenges:
       type: "arena_diamonds"
       amount: 15
   
-  challenge4:
+  score_500_points:
     description: "Schließe eine Arena mit mindestens 500 Punkten ab"
     type: "score"
     amount: 500
@@ -32,7 +32,7 @@ challenges:
       type: "arena_diamonds"
       amount: 25
   
-  challenge5:
+  zombie_hunter:
     description: "Besiege 20 Zombies"
     type: "kill_mobs"
     amount: 20
