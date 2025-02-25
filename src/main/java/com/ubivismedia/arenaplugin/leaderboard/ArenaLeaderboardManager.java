@@ -14,6 +14,7 @@ public class ArenaLeaderboardManager {
     private Location leaderboardLocation;
     private Scoreboard scoreboard;
     private Objective objective;
+    private final List<Hologram> holograms = new ArrayList<>();
     
     public ArenaLeaderboardManager() {
         setupScoreboard();
@@ -107,6 +108,46 @@ public class ArenaLeaderboardManager {
     }
     
     public void updateHologramDisplay() {
-        // Hologram logic would go here
+        clearExistingHolograms();
+        List<Map.Entry<UUID, Integer>> topPlayers = getTopPlayers(5);
+        
+        Location baseLocation = leaderboardLocation.clone().add(0, 5, 0); // Start above the leaderboard
+        for (int i = 0; i < topPlayers.size(); i++) {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(topPlayers.get(i).getKey());
+            String text = "§e" + (i + 1) + ". " + offlinePlayer.getName() + " - " + topPlayers.get(i).getValue() + " Punkte";
+            createHologram(baseLocation.clone().add(0, -i * 0.3, 0), text);
+        }
+    }
+    
+    private void clearExistingHolograms() {
+        for (Hologram hologram : holograms) {
+            hologram.remove();
+        }
+        holograms.clear();
+    }
+    
+    private void createHologram(Location location, String text) {
+        Hologram hologram = new Hologram(location, text);
+        holograms.add(hologram);
+        hologram.spawn();
+    }
+
+    // Hologram class is a placeholder for your actual hologram implementation
+    private static class Hologram {
+        private final Location location;
+        private final String text;
+        
+        public Hologram(Location location, String text) {
+            this.location = location;
+            this.text = text;
+        }
+        
+        public void spawn() {
+            // Spawn hologram logic here
+        }
+        
+        public void remove() {
+            // Remove hologram logic here
+        }
     }
 }
