@@ -51,4 +51,9 @@ public class ArenaTeamManager {
             }
         }
     }
+    
+    public void rewardSoloPlayer(Player player, int rewardAmount) {
+        currencyManager.addCurrency(player, rewardAmount);
+        player.sendMessage("Du hast " + rewardAmount + " Arena-Diamanten für deine Leistung erhalten!");
+    }
 }
