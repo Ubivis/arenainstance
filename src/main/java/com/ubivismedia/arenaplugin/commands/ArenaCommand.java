@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Location;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material;
 
 public class ArenaCommand implements CommandExecutor {
     
@@ -28,7 +31,7 @@ public class ArenaCommand implements CommandExecutor {
         Player player = (Player) sender;
         
         if (args.length < 2 && !args[0].equalsIgnoreCase("leave")) {
-            player.sendMessage("Benutzung: /arena <create|delete|join|leave> <ArenaName>");
+            player.sendMessage("Benutzung: /arena <create|delete|join|leave|start> <ArenaName>");
             return true;
         }
         
@@ -73,8 +76,23 @@ public class ArenaCommand implements CommandExecutor {
                 player.sendMessage("Du hast die Arena verlassen!");
                 break;
                 
+            case "start":
+                if (!arenaManager.arenaExists(arenaName)) {
+                    player.sendMessage("Diese Arena existiert nicht!");
+                    return true;
+                }
+                
+                player.sendMessage("Der Arenakampf startet in 10 Sekunden!");
+                Bukkit.getScheduler().runTaskLater(arenaManager.getPlugin(), () -> {
+                    player.getInventory().clear();
+                    player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
+                    player.sendMessage("Der Arenakampf hat begonnen! Kämpfe ums Überleben!");
+                }, 200L);
+                
+                break;
+                
             default:
-                player.sendMessage("Unbekannter Arena-Befehl! Nutze /arena <create|delete|join|leave> <ArenaName>");
+                player.sendMessage("Unbekannter Arena-Befehl! Nutze /arena <create|delete|join|leave|start> <ArenaName>");
                 break;
         }
         
