@@ -24,12 +24,19 @@ public class ArenaSpectatorManager implements CommandExecutor {
         startSpectatorAnimations();
     }
     
-    public void addSpectator(Player player, String arenaName, Location spectatorBlockLocation) {
+    public void addSpectator(Player player, String arenaName) {
         spectators.put(player.getUniqueId(), arenaName);
         player.setGameMode(GameMode.SPECTATOR);
         player.sendMessage("Du beobachtest nun die Arena " + arenaName + "!");
         
-        // Erstelle einen Zuschauer-Avatar auf dem Zuschauerblock
+        // Wähle einen zufälligen Zuschauerblock
+        Location spectatorBlockLocation = getRandomSpectatorBlockLocation(arenaName);
+        if (spectatorBlockLocation == null) {
+            player.sendMessage("Kein freier Zuschauerplatz verfügbar!");
+            return;
+        }
+        
+        // Erstelle einen Zuschauer-Avatar auf dem ausgewählten Block
         ArmorStand stand = spectatorBlockLocation.getWorld().spawn(spectatorBlockLocation, ArmorStand.class);
         stand.setCustomName(player.getName());
         stand.setCustomNameVisible(true);
@@ -110,19 +117,12 @@ public class ArenaSpectatorManager implements CommandExecutor {
         }
         
         String arenaName = args[0];
-        Location spectatorBlockLocation = getSpectatorBlockLocation(arenaName);
-        
-        if (spectatorBlockLocation == null) {
-            player.sendMessage("Diese Arena existiert nicht oder hat keinen Zuschauerbereich!");
-            return true;
-        }
-        
-        addSpectator(player, arenaName, spectatorBlockLocation);
+        addSpectator(player, arenaName);
         return true;
     }
     
-    private Location getSpectatorBlockLocation(String arenaName) {
-        // Diese Methode sollte die Position eines Zuschauerblocks aus der Arenadatenbank oder Konfiguration abrufen.
-        return null; // Platzhalter
+    private Location getRandomSpectatorBlockLocation(String arenaName) {
+        // Diese Methode sollte die Liste der Zuschauerblöcke abrufen und zufällig einen auswählen
+        return null; // Platzhalter für die Implementierung
     }
 }
