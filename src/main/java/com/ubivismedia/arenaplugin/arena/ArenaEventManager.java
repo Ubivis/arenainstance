@@ -1,5 +1,6 @@
 package com.ubivismedia.arenaplugin.arena;
 
+import com.ubivismedia.arenaplugin.economy.ArenaCurrencyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -15,9 +16,11 @@ public class ArenaEventManager {
     
     private final Arena arena;
     private final Random random = new Random();
+    private final ArenaCurrencyManager currencyManager;
     
-    public ArenaEventManager(Arena arena) {
+    public ArenaEventManager(Arena arena, ArenaCurrencyManager currencyManager) {
         this.arena = arena;
+        this.currencyManager = currencyManager;
     }
     
     public void handleWaveStart(int waveNumber, World world) {
@@ -71,5 +74,21 @@ public class ArenaEventManager {
             player.sendTitle("", "Dichter Nebel zieht auf für Welle " + waveNumber + "...", 10, 100, 10);
         }
         world.setStorm(true);
+    }
+    
+    public void handleArenaEnd(World world, boolean won) {
+        List<Player> players = world.getPlayers();
+        int totalReward = calculateReward(won);
+        
+        for (Player player : players) {
+            currencyManager.addCurrency(player, totalReward);
+            player.sendMessage("Du hast " + totalReward + " Arena-Diamanten erhalten!");
+        }
+    }
+    
+    private int calculateReward(boolean won) {
+        int baseReward = won ? 50 : 20; // Gewinner erhalten mehr
+        int waveBonus = arena.getCurrentWave() * 5; // 5 Diamanten pro Welle
+        return baseReward + waveBonus;
     }
 }
