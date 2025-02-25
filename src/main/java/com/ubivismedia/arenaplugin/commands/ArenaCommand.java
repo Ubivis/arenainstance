@@ -56,6 +56,9 @@ public class ArenaManager {
     public void saveArenas() {
         for (String name : arenas.keySet()) {
             arenaConfig.set("arenas." + name + ".world", name);
+            arenaConfig.set("arenas." + name + ".wave.amount", 5); // Standard-Wellenanzahl
+            arenaConfig.set("arenas." + name + ".wave.interval", 10); // Standard-Intervall in Sekunden
+            arenaConfig.set("arenas." + name + ".wave.mob", "ZOMBIE"); // Standardgegner
         }
         try {
             arenaConfig.save(arenaFile);
@@ -69,7 +72,13 @@ public class ArenaManager {
             for (String name : arenaConfig.getConfigurationSection("arenas").getKeys(false)) {
                 World world = Bukkit.getWorld(name);
                 if (world != null) {
-                    arenas.put(name, new Arena(name));
+                    Arena arena = new Arena(name);
+                    // Laden der Wellenkonfiguration
+                    int amount = arenaConfig.getInt("arenas." + name + ".wave.amount", 5);
+                    int interval = arenaConfig.getInt("arenas." + name + ".wave.interval", 10);
+                    String mob = arenaConfig.getString("arenas." + name + ".wave.mob", "ZOMBIE");
+                    arena.setWaveConfiguration(amount, interval, mob);
+                    arenas.put(name, arena);
                 }
             }
         }
