@@ -1,7 +1,7 @@
 package com.ubivismedia.arenaplugin.commands;
 
 import com.ubivismedia.arenaplugin.arena.ArenaManager;
-import com.ubivismedia.arenaplugin.gui.ArenaEditGUI;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -128,8 +128,11 @@ public class ArenaCommand implements CommandExecutor {
                     player.sendMessage("Diese Arena existiert nicht!");
                     return true;
                 }
-                new ArenaEditGUI(player, arenaManager.getArena(arenaName)).open();
-                player.sendMessage("Arena-Editor für " + arenaName + " wurde geöffnet!");
+                playerLocations.put(player, player.getLocation());
+                savedInventories.put(player, player.getInventory().getContents());
+                player.teleport(arenaManager.getArena(arenaName).getSpawnLocation());
+                player.setGameMode(GameMode.CREATIVE);
+                player.sendMessage("Du bearbeitest nun die Arena " + arenaName + "!");
                 break;
                 
             default:
