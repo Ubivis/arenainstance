@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.EntityType;
 
 public class ArenaCommand implements CommandExecutor {
     
@@ -107,12 +108,16 @@ public class ArenaCommand implements CommandExecutor {
                     player.sendMessage("Der Arenakampf hat begonnen! Erste Gegner erscheinen in 5 Sekunden!");
                     
                     new BukkitRunnable() {
+                        private int wave = 1;
                         @Override
                         public void run() {
-                            player.sendMessage("Eine neue Welle von Gegnern beginnt!");
-                            // Hier könnten Gegner gespawnt werden (z.B. Zombies oder benutzerdefinierte Mobs)
+                            player.sendMessage("Welle " + wave + " beginnt! Gegner erscheinen.");
+                            for (int i = 0; i < wave; i++) {
+                                arenaInstance.spawnEntity(player.getLocation().add(2, 0, 2), EntityType.ZOMBIE);
+                            }
+                            wave++;
                         }
-                    }.runTaskLater(arenaManager.getPlugin(), 100L);
+                    }.runTaskTimer(arenaManager.getPlugin(), 100L, 200L);
                 }, 200L);
                 
                 break;
