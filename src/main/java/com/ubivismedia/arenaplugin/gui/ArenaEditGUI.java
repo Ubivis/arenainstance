@@ -1,11 +1,10 @@
 package com.ubivismedia.arenaplugin.gui;
 
 import com.ubivismedia.arenaplugin.arena.Arena;
-import com.ubivismedia.arenaplugin.arena.ArenaSpectatorManager;
+import com.ubivismedia.arenaplugin.arena.ArenaPvPManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -17,30 +16,18 @@ public class ArenaEditGUI {
     private final Arena arena;
     private final Block configBlock;
     private final Inventory gui;
-    private final ArenaSpectatorManager spectatorManager;
+    private final ArenaPvPManager pvpManager;
     
-    public ArenaEditGUI(Arena arena, Block configBlock, ArenaSpectatorManager spectatorManager) {
+    public ArenaEditGUI(Arena arena, Block configBlock, ArenaPvPManager pvpManager) {
         this.arena = arena;
         this.configBlock = configBlock;
-        this.spectatorManager = spectatorManager;
+        this.pvpManager = pvpManager;
         this.gui = Bukkit.createInventory(null, 9, "Block-Einstellungen");
         setupItems();
     }
     
     private void setupItems() {
-        if (configBlock.getType() == Material.EMERALD_BLOCK) {
-            gui.setItem(0, createItem(Material.ZOMBIE_SPAWN_EGG, "Gegner-Typ: " + arena.getMobType(configBlock)));
-            gui.setItem(1, createItem(Material.PAPER, "Gegneranzahl: " + arena.getWaveAmount(configBlock)));
-            gui.setItem(2, createItem(Material.CLOCK, "Spawn-Intervall: " + arena.getWaveInterval(configBlock) + "s"));
-            gui.setItem(3, createItem(Material.BOOK, "Wellen-Nummer: " + arena.getWaveNumber(configBlock)));
-        }
-        if (configBlock.getType() == Material.DIAMOND_BLOCK) {
-            gui.setItem(4, createItem(Material.PLAYER_HEAD, "Zuschauerblock setzen"));
-            gui.setItem(5, createItem(Material.ENDER_PEARL, "Zuschauerblock-Optionen"));
-        }
-        if (configBlock.getType() == Material.GOLD_BLOCK) {
-            gui.setItem(6, createItem(Material.IRON_SWORD, "Spielerblock-Optionen"));
-        }
+        gui.setItem(0, createItem(Material.IRON_SWORD, "PvP: " + (pvpManager.isPvPEnabled(arena.getName()) ? "Aktiviert" : "Deaktiviert")));
         gui.setItem(8, createItem(Material.BARRIER, "Schließen"));
     }
     
@@ -65,26 +52,9 @@ public class ArenaEditGUI {
         
         switch (slot) {
             case 0:
-                new MobSelectionGUI(arena, configBlock).open(player);
-                break;
-            case 1:
-                arena.setWaveAmount(configBlock, arena.getWaveAmount(configBlock) + 1);
-                break;
-            case 2:
-                arena.setWaveInterval(configBlock, arena.getWaveInterval(configBlock) + 1);
-                break;
-            case 3:
-                arena.setWaveNumber(configBlock, arena.getWaveNumber(configBlock) + 1);
-                break;
-            case 4:
-                spectatorManager.addSpectatorBlock(arena.getName(), configBlock.getLocation());
-                player.sendMessage("Zuschauerblock hinzugefügt!");
-                break;
-            case 5:
-                new SpectatorBlockOptionsGUI(arena, configBlock).open(player);
-                break;
-            case 6:
-                new PlayerBlockOptionsGUI(arena, configBlock).open(player);
+                boolean newPvPStatus = !pvpManager.isPvPEnabled(arena.getName());
+                pvpManager.setPvPEnabled(arena.getName(), newPvPStatus);
+                player.sendMessage("PvP wurde " + (newPvPStatus ? "aktiviert" : "deaktiviert") + "!");
                 break;
             case 8:
                 player.closeInventory();
