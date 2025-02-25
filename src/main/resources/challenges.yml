@@ -1,0 +1,42 @@
+challenges:
+  challenge1:
+    description: "Besiege 50 Gegner in einer Arena"
+    type: "kill_mobs"
+    amount: 50
+    entity: "ALL"
+    reward:
+      type: "arena_diamonds"
+      amount: 10
+  
+  challenge2:
+    description: "Überlebe 10 Wellen ohne Schaden zu nehmen"
+    type: "survival"
+    amount: 10
+    reward:
+      type: "arena_diamonds"
+      amount: 20
+  
+  challenge3:
+    description: "Töte 3 Mitspieler in PvP-Modus"
+    type: "kill_players"
+    amount: 3
+    reward:
+      type: "arena_diamonds"
+      amount: 15
+  
+  challenge4:
+    description: "Schließe eine Arena mit mindestens 500 Punkten ab"
+    type: "score"
+    amount: 500
+    reward:
+      type: "arena_diamonds"
+      amount: 25
+  
+  challenge5:
+    description: "Besiege 20 Zombies"
+    type: "kill_mobs"
+    amount: 20
+    entity: "ZOMBIE"
+    reward:
+      type: "arena_diamonds"
+      amount: 10
