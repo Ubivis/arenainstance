@@ -24,23 +24,37 @@ public class ArenaCommand implements CommandExecutor {
         Player player = (Player) sender;
         
         if (args.length < 2) {
-            player.sendMessage("Benutzung: /arena create <ArenaName>");
+            player.sendMessage("Benutzung: /arena <create|delete> <ArenaName>");
             return true;
         }
         
-        if (args[0].equalsIgnoreCase("create")) {
-            String arenaName = args[1];
-            if (arenaManager.arenaExists(arenaName)) {
-                player.sendMessage("Eine Arena mit diesem Namen existiert bereits!");
-                return true;
-            }
+        String action = args[0].toLowerCase();
+        String arenaName = args[1];
+
+        switch (action) {
+            case "create":
+                if (arenaManager.arenaExists(arenaName)) {
+                    player.sendMessage("Eine Arena mit diesem Namen existiert bereits!");
+                    return true;
+                }
+                arenaManager.createArena(arenaName);
+                player.sendMessage("Arena " + arenaName + " wurde erfolgreich erstellt!");
+                break;
             
-            arenaManager.createArena(arenaName);
-            player.sendMessage("Arena " + arenaName + " wurde erfolgreich erstellt!");
-            return true;
+            case "delete":
+                if (!arenaManager.arenaExists(arenaName)) {
+                    player.sendMessage("Diese Arena existiert nicht!");
+                    return true;
+                }
+                arenaManager.removeArena(arenaName);
+                player.sendMessage("Arena " + arenaName + " wurde gelöscht!");
+                break;
+            
+            default:
+                player.sendMessage("Unbekannter Arena-Befehl! Nutze /arena <create|delete> <ArenaName>");
+                break;
         }
         
-        player.sendMessage("Unbekannter Arena-Befehl!");
         return true;
     }
 }
