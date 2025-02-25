@@ -11,6 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 public class ArenaCommand implements CommandExecutor {
     
@@ -82,8 +84,17 @@ public class ArenaCommand implements CommandExecutor {
                     return true;
                 }
                 
+                String instanceName = arenaName + "-" + player.getName();
+                World arenaInstance = Bukkit.createWorld(new WorldCreator(instanceName));
+                if (arenaInstance == null) {
+                    player.sendMessage("Fehler beim Erstellen der Arena-Instanz!");
+                    return true;
+                }
+                
                 player.sendMessage("Der Arenakampf startet in 10 Sekunden!");
                 Bukkit.getScheduler().runTaskLater(arenaManager.getPlugin(), () -> {
+                    playerLocations.put(player, player.getLocation());
+                    player.teleport(arenaInstance.getSpawnLocation());
                     player.getInventory().clear();
                     player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                     player.sendMessage("Der Arenakampf hat begonnen! Kämpfe ums Überleben!");
