@@ -7,15 +7,21 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ArenaWaveManager {
     
     private final Arena arena;
     private int currentWave = 1;
     private boolean battleActive = true;
+    private final Map<UUID, Integer> playerScores = new HashMap<>();
     
     public ArenaWaveManager(Arena arena) {
         this.arena = arena;
@@ -48,6 +54,7 @@ public class ArenaWaveManager {
                     Location spawnLocation = block.getLocation().add(0, 1, 0);
                     LivingEntity entity = (LivingEntity) world.spawnEntity(spawnLocation, EntityType.valueOf(mobType));
                     entity.setCustomName("Welle " + currentWave + " - " + mobType);
+                    entity.setMetadata("arenaMob", new FixedMetadataValue(arena.getPlugin(), true));
                 }
             }
         }
@@ -63,9 +70,33 @@ public class ArenaWaveManager {
         return true;
     }
     
+    public void recordKill(Player player) {
+        playerScores.put(player.getUniqueId(), playerScores.getOrDefault(player.getUniqueId(), 0) + 1);
+    }
+    
+    private void distributeRewards() {
+        for (UUID playerId : playerScores.keySet()) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null) {
+                int score = playerScores.get(playerId);
+                player.sendMessage("Du hast " + score + " Gegner besiegt! Hier ist deine Belohnung.");
+                
+                ItemStack arenaDiamond = new ItemStack(Material.DIAMOND, Math.max(1, score / 5));
+                ItemMeta meta = arenaDiamond.getItemMeta();
+                if (meta != null) {
+                    meta.setDisplayName("Arena-Diamant");
+                    arenaDiamond.setItemMeta(meta);
+                }
+                
+                player.getInventory().addItem(arenaDiamond);
+            }
+        }
+    }
+    
     private void endBattle() {
         battleActive = false;
         Bukkit.broadcastMessage("Die Arena " + arena.getName() + " wurde beendet! Alle Wellen besiegt oder alle Spieler tot.");
+        distributeRewards();
         arena.resetArena();
     }
 }
