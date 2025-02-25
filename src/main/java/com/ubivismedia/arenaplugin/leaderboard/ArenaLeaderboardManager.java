@@ -28,6 +28,7 @@ public class ArenaLeaderboardManager {
     public void addScore(Player player, int score) {
         playerScores.put(player.getUniqueId(), getScore(player) + score);
         updateHUDScoreboard();
+        updateHologramDisplay();
     }
     
     public int getScore(Player player) {
@@ -39,6 +40,7 @@ public class ArenaLeaderboardManager {
         Bukkit.broadcastMessage("Alle Arena-Scores wurden zurückgesetzt!");
         updateHUDScoreboard();
         updateLeaderboardDisplay();
+        updateHologramDisplay();
     }
     
     public List<Map.Entry<UUID, Integer>> getTopPlayers(int limit) {
@@ -102,5 +104,9 @@ public class ArenaLeaderboardManager {
             Bukkit.broadcastMessage("§e" + rank + ". " + offlinePlayer.getName() + " - " + entry.getValue() + " Punkte");
             rank++;
         }
+    }
+    
+    public void updateHologramDisplay() {
+        // Hologram logic would go here
     }
 }
