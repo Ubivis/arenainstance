@@ -1,5 +1,6 @@
 package com.ubivismedia.arenaplugin.mobs;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +14,7 @@ public class MobBehaviorManager implements Listener {
     
     public MobBehaviorManager(ArenaInstance plugin) {
         this.plugin = plugin;
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
     
     @EventHandler
