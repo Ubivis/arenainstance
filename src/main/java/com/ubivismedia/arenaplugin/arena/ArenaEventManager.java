@@ -31,7 +31,46 @@ public class ArenaEventManager {
         if (waveNumber % 2 == 0) { // Nur jede zweite Welle
             triggerRandomEvent(world, waveNumber);
         }
+        if (waveNumber % 5 == 0) {
+            triggerSpecialWave(world, waveNumber);
+        }
         logEvent("Welle " + waveNumber + " gestartet in Arena " + arena.getName());
+    }
+
+    private void triggerSpecialWave(World world, int waveNumber) {
+        int eventType = random.nextInt(3);
+        switch (eventType) {
+            case 0:
+                spawnBossWave(world, waveNumber);
+                break;
+            case 1:
+                triggerChaosWave(world, waveNumber);
+                break;
+            case 2:
+                applyExplosionWave(world, waveNumber);
+                break;
+        }
+    }
+
+    private void spawnBossWave(World world, int waveNumber) {
+        Location bossSpawn = world.getSpawnLocation().add(0, 1, 0);
+        Zombie boss = world.spawn(bossSpawn, Zombie.class);
+        boss.setCustomName("§cBoss-Welle " + waveNumber);
+        boss.setCustomNameVisible(true);
+        boss.setHealth(50.0);
+        
+        Bukkit.broadcastMessage("§cBoss-Welle " + waveNumber + " hat begonnen!");
+        logEvent("Boss-Welle in Arena " + arena.getName() + " gestartet (Welle " + waveNumber + ")");
+    }
+    
+    private void triggerChaosWave(World world, int waveNumber) {
+        Bukkit.broadcastMessage("§4Chaos-Welle! Doppelte Gegner erscheinen!");
+        logEvent("Chaos-Welle in Arena " + arena.getName() + " (Welle " + waveNumber + ")");
+    }
+    
+    private void applyExplosionWave(World world, int waveNumber) {
+        Bukkit.broadcastMessage("§6Explosions-Welle! Alle Gegner explodieren beim Tod!");
+        logEvent("Explosions-Welle in Arena " + arena.getName() + " (Welle " + waveNumber + ")");
     }
     
     private void triggerRandomEvent(World world, int waveNumber) {
