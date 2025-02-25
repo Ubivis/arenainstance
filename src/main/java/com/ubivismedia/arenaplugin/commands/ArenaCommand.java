@@ -13,11 +13,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ArenaCommand implements CommandExecutor {
     
     private final ArenaManager arenaManager;
     private final Map<Player, Location> playerLocations = new HashMap<>();
+    private final Map<Player, ItemStack[]> savedInventories = new HashMap<>();
     
     public ArenaCommand(ArenaManager arenaManager) {
         this.arenaManager = arenaManager;
@@ -75,6 +78,9 @@ public class ArenaCommand implements CommandExecutor {
                     return true;
                 }
                 player.teleport(playerLocations.remove(player));
+                if (savedInventories.containsKey(player)) {
+                    player.getInventory().setContents(savedInventories.remove(player));
+                }
                 player.sendMessage("Du hast die Arena verlassen!");
                 break;
                 
@@ -94,10 +100,19 @@ public class ArenaCommand implements CommandExecutor {
                 player.sendMessage("Der Arenakampf startet in 10 Sekunden!");
                 Bukkit.getScheduler().runTaskLater(arenaManager.getPlugin(), () -> {
                     playerLocations.put(player, player.getLocation());
+                    savedInventories.put(player, player.getInventory().getContents());
                     player.teleport(arenaInstance.getSpawnLocation());
                     player.getInventory().clear();
                     player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
-                    player.sendMessage("Der Arenakampf hat begonnen! Kämpfe ums Überleben!");
+                    player.sendMessage("Der Arenakampf hat begonnen! Erste Gegner erscheinen in 5 Sekunden!");
+                    
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            player.sendMessage("Eine neue Welle von Gegnern beginnt!");
+                            // Hier könnten Gegner gespawnt werden (z.B. Zombies oder benutzerdefinierte Mobs)
+                        }
+                    }.runTaskLater(arenaManager.getPlugin(), 100L);
                 }, 200L);
                 
                 break;
