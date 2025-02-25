@@ -76,9 +76,9 @@ public class ArenaEventManager {
         world.setStorm(true);
     }
     
-    public void handleArenaEnd(World world, boolean won) {
+    public void handleArenaEnd(World world, boolean won, int wavesCompleted, int mobsKilled, int playerKills) {
         List<Player> players = world.getPlayers();
-        int totalReward = calculateReward(won);
+        int totalReward = calculateReward(won, wavesCompleted, mobsKilled, playerKills);
         
         for (Player player : players) {
             currencyManager.addCurrency(player, totalReward);
@@ -86,9 +86,12 @@ public class ArenaEventManager {
         }
     }
     
-    private int calculateReward(boolean won) {
+    private int calculateReward(boolean won, int wavesCompleted, int mobsKilled, int playerKills) {
         int baseReward = won ? 50 : 20; // Gewinner erhalten mehr
-        int waveBonus = arena.getCurrentWave() * 5; // 5 Diamanten pro Welle
-        return baseReward + waveBonus;
+        int waveBonus = wavesCompleted * 5; // 5 Diamanten pro abgeschlossene Welle
+        int mobBonus = mobsKilled * 2; // 2 Diamanten pro besiegtem Mob
+        int pvpBonus = playerKills * 10; // 10 Diamanten pro getötetem Spieler
+        
+        return baseReward + waveBonus + mobBonus + pvpBonus;
     }
 }
