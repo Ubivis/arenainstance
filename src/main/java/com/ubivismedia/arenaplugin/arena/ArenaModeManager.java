@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class ArenaModeManager {
     
@@ -14,19 +13,19 @@ public class ArenaModeManager {
         SPEEDRUN
     }
     
-    private final Map<UUID, ArenaMode> playerModes = new HashMap<>();
+    private final Map<String, ArenaMode> arenaModes = new HashMap<>();
     
-    public void setPlayerMode(Player player, ArenaMode mode) {
-        playerModes.put(player.getUniqueId(), mode);
-        player.sendMessage("Du spielst jetzt im " + mode.name() + "-Modus!");
+    public void setArenaMode(String arenaName, ArenaMode mode) {
+        arenaModes.put(arenaName, mode);
+        Bukkit.broadcastMessage("Die Arena " + arenaName + " ist jetzt im " + mode.name() + "-Modus!");
     }
     
-    public ArenaMode getPlayerMode(Player player) {
-        return playerModes.getOrDefault(player.getUniqueId(), ArenaMode.SURVIVAL);
+    public ArenaMode getArenaMode(String arenaName) {
+        return arenaModes.getOrDefault(arenaName, ArenaMode.SURVIVAL);
     }
     
-    public void applyModeEffects(Player player) {
-        ArenaMode mode = getPlayerMode(player);
+    public void applyModeEffects(Player player, String arenaName) {
+        ArenaMode mode = getArenaMode(arenaName);
         
         switch (mode) {
             case SURVIVAL:
