@@ -54,16 +54,16 @@ public class ArenaEditGUI {
         
         switch (slot) {
             case 0:
-                arena.cycleMobType(configBlock);
+                arena.setMobType(configBlock, arena.getNextMobType(configBlock));
                 break;
             case 1:
-                arena.increaseWaveAmount(configBlock);
+                arena.setWaveAmount(configBlock, arena.getWaveAmount(configBlock) + 1);
                 break;
             case 2:
-                arena.increaseWaveInterval(configBlock);
+                arena.setWaveInterval(configBlock, arena.getWaveInterval(configBlock) + 1);
                 break;
             case 3:
-                arena.increaseWaveNumber(configBlock);
+                arena.setWaveNumber(configBlock, arena.getWaveNumber(configBlock) + 1);
                 break;
             case 8:
                 player.closeInventory();
