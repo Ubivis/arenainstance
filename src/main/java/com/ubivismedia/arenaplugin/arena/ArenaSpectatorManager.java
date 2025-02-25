@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ArenaSpectatorManager {
+public class ArenaSpectatorManager implements CommandExecutor {
     
     private final Map<UUID, String> spectators = new HashMap<>();
     private final Map<UUID, ArmorStand> spectatorAvatars = new HashMap<>();
@@ -60,5 +63,36 @@ public class ArenaSpectatorManager {
     
     public boolean isSpectating(Player player) {
         return spectators.containsKey(player.getUniqueId());
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("Nur Spieler können diesen Befehl ausführen!");
+            return true;
+        }
+        
+        Player player = (Player) sender;
+        
+        if (args.length < 1) {
+            player.sendMessage("Benutzung: /arena view <ArenaName>");
+            return true;
+        }
+        
+        String arenaName = args[0];
+        Location spectatorBlockLocation = getSpectatorBlockLocation(arenaName);
+        
+        if (spectatorBlockLocation == null) {
+            player.sendMessage("Diese Arena existiert nicht oder hat keinen Zuschauerbereich!");
+            return true;
+        }
+        
+        addSpectator(player, arenaName, spectatorBlockLocation);
+        return true;
+    }
+    
+    private Location getSpectatorBlockLocation(String arenaName) {
+        // Diese Methode sollte die Position eines Zuschauerblocks aus der Arenadatenbank oder Konfiguration abrufen.
+        return null; // Platzhalter
     }
 }
