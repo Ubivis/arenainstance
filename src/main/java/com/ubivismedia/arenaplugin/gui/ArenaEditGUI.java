@@ -54,7 +54,7 @@ public class ArenaEditGUI {
         
         switch (slot) {
             case 0:
-                arena.setMobType(configBlock, arena.getNextMobType(configBlock));
+                new MobSelectionGUI(arena, configBlock).open(player);
                 break;
             case 1:
                 arena.setWaveAmount(configBlock, arena.getWaveAmount(configBlock) + 1);
