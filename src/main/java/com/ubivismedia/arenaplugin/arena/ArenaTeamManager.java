@@ -8,6 +8,7 @@ public class ArenaTeamManager {
     
     private final Map<String, List<UUID>> arenaTeams = new HashMap<>();
     private final Map<UUID, String> playerTeams = new HashMap<>();
+    private final Map<UUID, Integer> playerArenaDiamonds = new HashMap<>();
     
     public void addPlayerToTeam(String arenaName, Player player) {
         arenaTeams.putIfAbsent(arenaName, new ArrayList<>());
@@ -39,11 +40,22 @@ public class ArenaTeamManager {
         
         int rewardPerPlayer = totalReward / teamMembers.size();
         for (UUID playerId : teamMembers) {
+            playerArenaDiamonds.put(playerId, playerArenaDiamonds.getOrDefault(playerId, 0) + rewardPerPlayer);
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
                 player.sendMessage("Du erhältst " + rewardPerPlayer + " Arena-Diamanten für den Teamerfolg!");
-                // Hier könnte die Belohnung ins Inventar gelegt werden
             }
+        }
+    }
+    
+    public int getArenaDiamonds(Player player) {
+        return playerArenaDiamonds.getOrDefault(player.getUniqueId(), 0);
+    }
+    
+    public void removeArenaDiamonds(Player player, int amount) {
+        int current = playerArenaDiamonds.getOrDefault(player.getUniqueId(), 0);
+        if (current >= amount) {
+            playerArenaDiamonds.put(player.getUniqueId(), current - amount);
         }
     }
 }
