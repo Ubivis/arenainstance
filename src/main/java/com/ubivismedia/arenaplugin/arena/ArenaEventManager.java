@@ -11,12 +11,16 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 import java.util.Random;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class ArenaEventManager {
     
     private final Arena arena;
     private final Random random = new Random();
     private final ArenaCurrencyManager currencyManager;
+    private final File logFile = new File("plugins/ArenaInstance/arena_logs.txt");
     
     public ArenaEventManager(Arena arena, ArenaCurrencyManager currencyManager) {
         this.arena = arena;
@@ -27,6 +31,7 @@ public class ArenaEventManager {
         if (waveNumber % 2 == 0) { // Nur jede zweite Welle
             triggerRandomEvent(world, waveNumber);
         }
+        logEvent("Welle " + waveNumber + " gestartet in Arena " + arena.getName());
     }
     
     private void triggerRandomEvent(World world, int waveNumber) {
@@ -57,6 +62,7 @@ public class ArenaEventManager {
         merchant.setMetadata("arena_merchant", new FixedMetadataValue(arena.getPlugin(), true));
         
         target.sendMessage("Ein mysteriöser Händler ist erschienen für Welle " + waveNumber + "!");
+        logEvent("Mysteriöser Händler in Arena " + arena.getName() + " bei Welle " + waveNumber);
     }
     
     private void applyCurseEffect(World world, int waveNumber) {
@@ -67,6 +73,7 @@ public class ArenaEventManager {
             player.sendMessage("Ein dunkler Fluch wurde auf die Arena gelegt für Welle " + waveNumber + "!");
             world.playSound(player.getLocation(), Sound.ENTITY_WITCH_AMBIENT, 1.0f, 1.0f);
         }
+        logEvent("Fluch-Effekt auf Arena " + arena.getName() + " bei Welle " + waveNumber);
     }
     
     private void triggerFogEffect(World world, int waveNumber) {
@@ -74,6 +81,7 @@ public class ArenaEventManager {
             player.sendTitle("", "Dichter Nebel zieht auf für Welle " + waveNumber + "...", 10, 100, 10);
         }
         world.setStorm(true);
+        logEvent("Nebel-Effekt in Arena " + arena.getName() + " bei Welle " + waveNumber);
     }
     
     public void handleArenaEnd(World world, boolean won, int wavesCompleted, int mobsKilled, int playerKills) {
@@ -84,6 +92,7 @@ public class ArenaEventManager {
             currencyManager.addCurrency(player, totalReward);
             player.sendMessage("Du hast " + totalReward + " Arena-Diamanten erhalten!");
         }
+        logEvent("Arena " + arena.getName() + " beendet. Ergebnis: " + (won ? "Gewonnen" : "Verloren") + ", Wellen: " + wavesCompleted + ", Mobs besiegt: " + mobsKilled + ", PvP-Kills: " + playerKills);
     }
     
     private int calculateReward(boolean won, int wavesCompleted, int mobsKilled, int playerKills) {
@@ -93,5 +102,13 @@ public class ArenaEventManager {
         int pvpBonus = playerKills * 10; // 10 Diamanten pro getötetem Spieler
         
         return baseReward + waveBonus + mobBonus + pvpBonus;
+    }
+    
+    private void logEvent(String message) {
+        try (FileWriter writer = new FileWriter(logFile, true)) {
+            writer.write("[ArenaEvent] " + message + "\n");
+        } catch (IOException e) {
+            Bukkit.getLogger().warning("Fehler beim Schreiben ins Log: " + e.getMessage());
+        }
     }
 }
