@@ -5,6 +5,7 @@ import com.ubivismedia.arenaplugin.arena.ArenaSpectatorManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -35,6 +36,10 @@ public class ArenaEditGUI {
         }
         if (configBlock.getType() == Material.DIAMOND_BLOCK) {
             gui.setItem(4, createItem(Material.PLAYER_HEAD, "Zuschauerblock setzen"));
+            gui.setItem(5, createItem(Material.ENDER_PEARL, "Zuschauerblock-Optionen"));
+        }
+        if (configBlock.getType() == Material.GOLD_BLOCK) {
+            gui.setItem(6, createItem(Material.IRON_SWORD, "Spielerblock-Optionen"));
         }
         gui.setItem(8, createItem(Material.BARRIER, "Schließen"));
     }
@@ -74,6 +79,12 @@ public class ArenaEditGUI {
             case 4:
                 spectatorManager.addSpectatorBlock(arena.getName(), configBlock.getLocation());
                 player.sendMessage("Zuschauerblock hinzugefügt!");
+                break;
+            case 5:
+                new SpectatorBlockOptionsGUI(arena, configBlock).open(player);
+                break;
+            case 6:
+                new PlayerBlockOptionsGUI(arena, configBlock).open(player);
                 break;
             case 8:
                 player.closeInventory();
